@@ -11,8 +11,8 @@ st.title("🌊 Under the sea detection")
 
 st.write("Upload your Image...")
 
-#model = torch.hub.load('./yolov5', 'custom', path='./last.pt', source='local')
-model = torch.hub.load('ultralytics/yolov5', 'custom', path='models/last.pt')
+#model = torch.hub.load('./yolov5', 'custom', path='./best.pt', source='local')
+model = torch.hub.load('ultralytics/yolov5', 'custom', path='models/best.pt')
 
 uploaded_file = st.file_uploader("Choose .jpg pic ...", type="jpg")
 if uploaded_file is not None:
