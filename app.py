@@ -17,9 +17,7 @@ model = torch.hub.load('ultralytics/yolov5', 'custom', path='models/best.pt')
 uploaded_file = st.file_uploader("Choose .jpg pic ...", type="jpg")
 if uploaded_file is not None:
     
- import cv2
-
-def count_objects_left_side(image_path, model):
+ def count_objects_left_side(image_path, model):
     # โหลดรูปภาพ
     image = cv2.imread(image_path)
     
