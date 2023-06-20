@@ -16,7 +16,35 @@ model = torch.hub.load('ultralytics/yolov5', 'custom', path='models/best.pt')
 
 uploaded_file = st.file_uploader("Choose .jpg pic ...", type="jpg")
 if uploaded_file is not None:
-  
+    
+ import cv2
+
+def count_objects_left_side(image_path, model):
+    # โหลดรูปภาพ
+    image = cv2.imread(image_path)
+    
+    # แบ่งรูปภาพเป็นครึ่งหนึ่ง
+    height, width = image.shape[:2]
+    half_width = width // 2
+    left_image = image[:, :half_width]
+    
+    # ทำการตรวจจับวัตถุหรือจุดสำคัญบนรูปภาพฝั่งซ้าย
+    detections = model.detect(left_image)
+    
+    # นับจำนวนวัตถุทั้งหมด
+    object_count = len(detections)
+    
+    # แสดงสิ่งที่พบทั้งหมด
+    for detection in detections:
+        label = detection.label
+        print("Object:", label)
+    
+    # แสดงผลลัพธ์
+    print("Total Objects:", object_count)
+    print("Objects on the Left Side:", object_count)
+
+
+
   file_bytes = np.asarray(bytearray(uploaded_file.read()))
   image = cv2.imdecode(file_bytes, 1)
 
@@ -35,7 +63,10 @@ if uploaded_file is not None:
   #0  148.605362   0.0    1022.523743  818.618286    0.813045      2      turtle
   
   st.code(detect_class[['name', 'xmin','ymin', 'xmax', 'ymax']])
-  
+   # แสดงผลลัพธ์
+  print("Total Objects:", object_count)
+  print("Objects on the Left Side:", object_count)
+
   
   
   #st.success(detect_class)
