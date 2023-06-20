@@ -1,63 +1,55 @@
-import argparse
 import streamlit as st
-import io
-import os
-from PIL import Image
+import cv2
 import numpy as np
-import torch, json , cv2 , detect
-
+import torch
+from PIL import Image
+import pandas as pd
 
 st.title("🌊 Under the sea detection")
 
 st.write("Upload your Image...")
 
-#model = torch.hub.load('./yolov5', 'custom', path='./best.pt', source='local')
 model = torch.hub.load('ultralytics/yolov5', 'custom', path='models/best.pt')
-def count_objects_left_side(image_path, model):
-    # โหลดรูปภาพ
-    image = cv2.imread(image_path)
-    
+
+@st.cache(allow_output_mutation=True)
+def load_model():
+    return model
+
+def count_objects_left_side(image, model):
     # แบ่งรูปภาพเป็นครึ่งหนึ่ง
     height, width = image.shape[:2]
     half_width = width // 2
     left_image = image[:, :half_width]
-    
+
     # ทำการตรวจจับวัตถุหรือจุดสำคัญบนรูปภาพฝั่งซ้าย
-    detections = model.detect(left_image)
+    result = model(left_image, size=600)
+    detect_class = result.pandas().xyxy[0]
     
     # นับจำนวนวัตถุทั้งหมด
-    object_count = len(detections)
-    
-    # แสดงสิ่งที่พบทั้งหมด
-    for detection in detections:
-        label = detection.label
-        print("Object:", label)
-    
+    object_count = len(detect_class)
+
+    # สร้าง DataFrame สำหรับเก็บข้อมูลวัตถุ
+    objects_df = pd.DataFrame(detect_class, columns=["xmin", "ymin", "xmax", "ymax", "confidence", "class", "name"])
+    objects_df = objects_df[["name", "xmin", "ymin", "xmax", "ymax"]]
+
     # แสดงผลลัพธ์
-    print("Total Objects:", object_count)
-    print("Objects on the Left Side:", object_count)
-    
+    st.write("Total Objects:", object_count)
+    st.write("Objects on the Left Side:", object_count)
+    st.dataframe(objects_df)
+
 uploaded_file = st.file_uploader("Choose .jpg pic ...", type="jpg")
 if uploaded_file is not None:
-    
-  file_bytes = np.asarray(bytearray(uploaded_file.read()))
-  image = cv2.imdecode(file_bytes, 1)
+    file_bytes = np.asarray(bytearray(uploaded_file.read()))
+    image = cv2.imdecode(file_bytes, 1)
+    imgRGB = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-  imgRGB = cv2.cvtColor(image , cv2.COLOR_BGR2RGB)
-  #st.image(imgRGB)
+    st.image(imgRGB)
 
-  st.write("")
-  st.write("Detecting...")
-  result = model(imgRGB, size=600)
-  
-  detect_class = result.pandas().xyxy[0] 
-  
-  #labels, cord_thres = detect_class[:, :].numpy(), detect_class[:, :].numpy()
-  
-  #     xmin       ymin    xmax        ymax          confidence  class    name
-  #0  148.605362   0.0    1022.523743  818.618286    0.813045      2      turtle
-  
-  st.code(detect_class[['name', 'xmin','ymin', 'xmax', 'ymax']])
+    st.write("")
+    st.write("Detecting...")
+
+    model = load_model()
+    count_objects_left_side(imgRGB, model)
   
 
   #st.success(detect_class)
