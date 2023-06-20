@@ -9,7 +9,8 @@ st.title("🌊 Under the sea detection")
 
 st.write("Upload your Image...")
 
-model = torch.hub.load('ultralytics/yolov5', 'custom', path='models/best.pt')
+model_path = "models/best.pt"  # เส้นทางไฟล์โมเดล best.pt
+model = torch.hub.load('ultralytics/yolov5', 'custom', path=model_path)
 
 @st.cache(allow_output_mutation=True)
 def load_model():
@@ -50,9 +51,3 @@ if uploaded_file is not None:
 
     model = load_model()
     count_objects_left_side(imgRGB, model)
-  
-
-  #st.success(detect_class)
-  
-  
-
