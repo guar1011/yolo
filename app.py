@@ -7,16 +7,16 @@ import numpy as np
 import torch, json , cv2 , detect
 
 
-st.title("🌊 Under the sea detection")
+st.title("Wrong sport detection")
 
 st.write("Upload your Image...")
 
 #model = torch.hub.load('./yolov5', 'custom', path='./best.pt', source='local')
-model = torch.hub.load('ultralytics/yolov5', 'custom', path='models/best.pt')
-  
+model = torch.hub.load('ultralytics/yolov5', 'custom', path='models/last.pt')
+
 uploaded_file = st.file_uploader("Choose .jpg pic ...", type="jpg")
 if uploaded_file is not None:
-    
+  
   file_bytes = np.asarray(bytearray(uploaded_file.read()))
   image = cv2.imdecode(file_bytes, 1)
 
@@ -25,6 +25,10 @@ if uploaded_file is not None:
 
   st.write("")
   st.write("Detecting...")
+
+  imgW = imgRGB.shape[1]
+  Cimg = imgW/2
+  
   result = model(imgRGB, size=600)
   
   detect_class = result.pandas().xyxy[0] 
@@ -36,9 +40,12 @@ if uploaded_file is not None:
   
   st.code(detect_class[['name', 'xmin','ymin', 'xmax', 'ymax']])
   
+  detectW = detect_class[detect_class['xmin'] <= Cimg]
 
-  #st.success(detect_class)
-  
+  textA = 'นักเรียนทั้งหมด : ' + str(detect_class.shape[0]) + ' คน'
+  textR = 'นักเรียนที่อยู่ผิดสนาม : ' + str(detectW.shape[0]) + ' คน'
+  st.success(textA)
+  st.success(textR)
   outputpath = 'output.jpg'
   
   result.render()  # render bbox in image
