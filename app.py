@@ -13,11 +13,7 @@ st.write("Upload your Image...")
 
 #model = torch.hub.load('./yolov5', 'custom', path='./best.pt', source='local')
 model = torch.hub.load('ultralytics/yolov5', 'custom', path='models/best.pt')
-
-uploaded_file = st.file_uploader("Choose .jpg pic ...", type="jpg")
-if uploaded_file is not None:
-    
- def count_objects_left_side(image_path, model):
+def count_objects_left_side(image_path, model):
     # โหลดรูปภาพ
     image = cv2.imread(image_path)
     
@@ -40,9 +36,10 @@ if uploaded_file is not None:
     # แสดงผลลัพธ์
     print("Total Objects:", object_count)
     print("Objects on the Left Side:", object_count)
-
-
-
+    
+uploaded_file = st.file_uploader("Choose .jpg pic ...", type="jpg")
+if uploaded_file is not None:
+    
   file_bytes = np.asarray(bytearray(uploaded_file.read()))
   image = cv2.imdecode(file_bytes, 1)
 
