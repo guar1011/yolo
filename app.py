@@ -7,7 +7,7 @@ import numpy as np
 import torch, json , cv2 , detect
 
 
-st.title("Wrong sport detection")
+st.title("detection")
 
 st.write("Upload your Image...")
 
